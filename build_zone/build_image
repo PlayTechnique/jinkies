@@ -2,7 +2,13 @@
 
 set -e
 
+THIS_SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+cd ${THIS_SCRIPT_DIR}
+
+source build.env
+
 NAME=$(basename $0)
+
 function usage() {
   cat <<EOS
   Usage: ${NAME} - builds the container
@@ -10,8 +16,6 @@ function usage() {
     -v -- Version number to tag the build with. Defaults to latest.
 EOS
 }
-
-VERSION="latest"
 
 for arg in $@
 do
@@ -26,5 +30,5 @@ if [ ! -z "${HELP}" ]; then
   exit 0
 fi
 
-docker build -t "playtechnique/jinkies:${VERSION}" .
+docker build -t "${IMAGE_TAG}:${IMAGE_VERSION}" .
 
