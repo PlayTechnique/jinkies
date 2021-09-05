@@ -27,3 +27,4 @@ if [ ! -z "${HELP}" ]; then
 fi
 
 docker build -t "playtechnique/jinkies:${VERSION}" .
+
