@@ -53,5 +53,7 @@ if [ ! -z "${HELP}" ]; then
   exit 0
 fi
 
-docker build -t "${IMAGE_TAG}:${IMAGE_VERSION}" .
+docker build -t "${IMAGE_TAG}:${IMAGE_VERSION}" . --build-arg cask_jenkins_config=${CASC_JENKINS_CONFIG} \
+                                                  --build-arg jenkins_home=${JENKINS_HOME} \
+                                                  --build-arg jenkins_java_opts=${JENKINS_JAVA_OPTS}
 
