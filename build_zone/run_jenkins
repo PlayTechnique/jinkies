@@ -1,8 +1,8 @@
-#!/bin/bash -el
+#!/bin/bash -elx
 
 THIS_SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 cd ${THIS_SCRIPT_DIR}
 
 source build.env
 
-docker run --rm -p 8080:8080 --name jinkies playtechnique/jinkies:latest
+docker run -d -p ${HOST_JENKINS_PORT}:${CONTAINER_JENKINS_PORT} --name ${CONTAINER_SHORT_NAME} ${IMAGE_TAG}:${IMAGE_VERSION}
