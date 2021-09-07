@@ -5,7 +5,30 @@ set -e
 THIS_SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 cd ${THIS_SCRIPT_DIR}
 
-source build.env
+if [[ ${#@} -lt 1 ]]; then
+  show_help="true"
+fi
+
+ENV_FILE=build.env
+
+for arg in $@
+do
+  case $arg in
+    "--env-file"       )  shift; ENV_FILE=$arg; shift;;
+    "-h" | "--help"    )  show_help="true"; shift;;
+  esac
+done
+
+if [[ "${show_help}" == "true" ]]; then
+  echo "Usage: ${0} with no arguments, builds the image."
+  echo "       ${0} --env-file /path/to/foo.env. Provides an alternate set of definitions for environment variables."
+  exit 0
+fi
+
+if [[ -f "${ENV_FILE}"]]; then
+  source "${ENV_FILE}"
+  else
+    echo "ERROR: No such variables file <${ENV_FILE}>. This must exist and be readable."
 
 NAME=$(basename $0)
 
