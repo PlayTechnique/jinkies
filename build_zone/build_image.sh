@@ -5,11 +5,8 @@ set -e
 THIS_SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 cd ${THIS_SCRIPT_DIR}
 
-if [[ ${#@} -lt 1 ]]; then
-  show_help="true"
-fi
-
-ENV_FILE=build.env
+THIS_SCRIPT_NAME=$(basename $0)
+ENV_FILE="${THIS_SCRIPT_DIR}/build.env"
 
 for arg in $@
 do
@@ -19,26 +16,28 @@ do
   esac
 done
 
+function usage() {
+  cat <<EOS
+Usage: ${NAME} --env-file - builds the container\n
+Arguments:\n
+\t--env-file\t/path/to/foo.env. Provides an alternate set of definitions for environment variables \n
+\t\t\t(defaults to built in build.env)
+EOS
+}
+
+
 if [[ "${show_help}" == "true" ]]; then
-  echo "Usage: ${0} with no arguments, builds the image."
-  echo "       ${0} --env-file /path/to/foo.env. Provides an alternate set of definitions for environment variables."
+  echo -e $(usage)
   exit 0
 fi
 
-if [[ -f "${ENV_FILE}"]]; then
+
+if [[ -f "${ENV_FILE}" ]]; then
   source "${ENV_FILE}"
-  else
-    echo "ERROR: No such variables file <${ENV_FILE}>. This must exist and be readable."
+else
+  echo "ERROR: No such variables file <${ENV_FILE}>. This must exist and be readable."
+fi
 
-NAME=$(basename $0)
-
-function usage() {
-  cat <<EOS
-  Usage: ${NAME} - builds the container
-  Arguments:
-    -v -- Version number to tag the build with. Defaults to latest.
-EOS
-}
 
 for arg in $@
 do
@@ -48,12 +47,11 @@ do
   esac
 done
 
-if [ ! -z "${HELP}" ]; then
+if [[ ! -z "${HELP}" ]]; then
   echo $(usage)
   exit 0
 fi
 
-docker build -t "${IMAGE_TAG}:${IMAGE_VERSION}" . --build-arg cask_jenkins_config=${CASC_JENKINS_CONFIG} \
-                                                  --build-arg jenkins_home=${JENKINS_HOME} \
-                                                  --build-arg jenkins_java_opts=${JENKINS_JAVA_OPTS}
-
+docker build -t "${IMAGE_TAG}:${IMAGE_VERSION}" . --build-arg cask_jenkins_config="${CASC_JENKINS_CONFIG}" \
+                                                  --build-arg jenkins_home="${JENKINS_HOME}" \
+                                                  --build-arg jenkins_java_opts="${JENKINS_JAVA_OPTS}"
