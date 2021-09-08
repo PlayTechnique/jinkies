@@ -7,50 +7,36 @@ cd ${THIS_SCRIPT_DIR}
 
 THIS_SCRIPT_NAME=$(basename $0)
 ENV_FILE="${THIS_SCRIPT_DIR}/build.env"
+SHOW_HELP="false"
 
 for arg in $@
 do
   case $arg in
     "--env-file"       )  shift; ENV_FILE=$arg; shift;;
-    "-h" | "--help"    )  show_help="true"; shift;;
+    "-h" | "--help"    )  SHOW_HELP="true"; shift;;
   esac
 done
 
 function usage() {
   cat <<EOS
-Usage: ${NAME} --env-file - builds the container\n
+Usage: ${THIS_SCRIPT_NAME} --env-file - builds the container\n
 Arguments:\n
 \t--env-file\t/path/to/foo.env. Provides an alternate set of definitions for environment variables \n
 \t\t\t(defaults to built in build.env)
 EOS
 }
 
-
-if [[ "${show_help}" == "true" ]]; then
+if [[ "${SHOW_HELP}" == "true" ]]; then
   echo -e $(usage)
   exit 0
 fi
 
-
-if [[ -f "${ENV_FILE}" ]]; then
-  source "${ENV_FILE}"
-else
+if [[ ! -f "${ENV_FILE}" ]]; then
   echo "ERROR: No such variables file <${ENV_FILE}>. This must exist and be readable."
+  exit 1
 fi
 
-
-for arg in $@
-do
-  case $arg in
-    "-v"               )  shift; VERSION=$1; shift;;
-    "-h" | "--help"    )  HELP="true"; shift;;
-  esac
-done
-
-if [[ ! -z "${HELP}" ]]; then
-  echo $(usage)
-  exit 0
-fi
+source "${ENV_FILE}"
 
 docker build -t "${IMAGE_TAG}:${IMAGE_VERSION}" . --build-arg cask_jenkins_config="${CASC_JENKINS_CONFIG}" \
                                                   --build-arg jenkins_home="${JENKINS_HOME}" \
