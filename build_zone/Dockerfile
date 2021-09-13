@@ -1,5 +1,4 @@
 FROM jenkins/jenkins:lts-jdk11
-ENV JAVA_OPTS=-Djenkins.install.runSetupWizard=false
 
 USER jenkins
 
@@ -15,6 +14,7 @@ USER jenkins
 
 
 # Why each plugin is needed:
+#
 # plain-credentials is recommended in the github pull request builder's configuration page as the preferred method
 # of providing your credentials to Jenkins.
 # ghprb is to manage communication with github
