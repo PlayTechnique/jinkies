@@ -16,7 +16,6 @@ RUN mkdir /run/secrets/ && chown jenkins:jenkins /run/secrets/ && chmod 0700 /ru
 
 USER jenkins
 
-
 # Why each plugin is needed:
 #
 # plain-credentials is recommended in the github pull request builder's configuration page as the preferred method

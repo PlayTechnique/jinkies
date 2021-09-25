@@ -69,4 +69,4 @@ I have ideas for simple, small, hobbyist tools, and this is one of those ideas.
 
 # How do I get started using this project?
 If the image is hosted on docker hub, probably pull that. For now, though, it's all in dev mode, so 
-check out the build_zone and use the build_image.sh and run_jenkins.sh scripts to build and run the container.
+check out the Docker directory and use the build_image script to build the container and the jinkies script to run the container.
