@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 
 import copy
+import os
+from pathlib import Path
 import re
 import sys
 from typing import List
 
+from mako.lookup import TemplateLookup
 from mako.template import Template
-
 
 class CredentialArgNotSupplied(Exception):
     """Custom exception class for indicating that an internal method did not find an argument to the --credential
@@ -53,6 +55,7 @@ def get_credential_template_path_from_argv(private_argv: list = None, arg_to_sea
     party_down you supplied <None>
     """
     credential_name = get_single_value_from_args(private_argv, arg_to_search_for)
+
     if credential_name not in valid_values:
         raise CredentialNameNotFound(f"""--credential specified, but no credential type given. Valid credentials are
 {"".join(valid_values)} you supplied <{credential_name}>""")
@@ -105,47 +108,68 @@ def get_template_properties():
     return None
 
 
-def helpful_help():
+def helpful_help(default_templates_dir):
     this_script_name = sys.argv[0]
     return f"""{this_script_name} - generates a credentials file to standard out. Pop it where you need it \n
 and then mount it in to your jinkies. 😎
 
-This script both helps you understand a correctly formatted credentials file's format, and 
+This script both helps you understand a correctly formatted credentials file's format, and lets you enter text into 
+template credential files to complete them with your own data.
+
+Environment Variables
+
+TEMPLATES_DIR="path/to/dir" (defaults to "{default_templates_dir}", the built in templates)
 
 -h --help - display this help message
---list    - list all known credentials types (exclusive option; runs and exits no matter what else is on the cmd line)
---credential <name>   - output the template file format for the <name> credentials
---<name>-var <value>  - the 
-
+--list    - list all known credentials names
+--credential <credential_name>   - output the template file format for the <name> credentials. If variables are provided, 
+                                   interpolate those values.
+--<credential_name>-<var_name> <value>  - set a variable to interpolate into the named template. Requires '--credential <name>' to
+                                        be provided. 
 """
 
 
 def main():
+    default_templates_dir = "./credentials_templates"
+    TEMPLATES_DIR = os.path.abspath(os.environ.get("TEMPLATES_DIR", default_templates_dir))
+
     # Make a private copy of argv so that I can make edits to the contents with careless frivolity.
     private_argv = copy.deepcopy(sys.argv)
 
     if len(private_argv) <= 1:
-        print(helpful_help())
+        print(helpful_help(default_templates_dir))
         sys.exit(1)
 
     if "-h" in private_argv or "--help" in private_argv:
-        print(helpful_help())
+        print(helpful_help(default_templates_dir))
         sys.exit(0)
+
+    if not os.path.isdir(TEMPLATES_DIR):
+        sys.stderr.write(f"TEMPLATES_DIR {TEMPLATES_DIR} must be provided.")
+        sys.stderr.write(helpful_help(default_templates_dir))
+        sys.exit(1)
+
+    os.chdir = TEMPLATES_DIR
 
     # We expect to see the string "--credentials" in argv followed by an argument which corresponds to
     # everything in the name of a credentials_templates file up to the file extension.
     credentials_template_identifier = "--credentials"
-    valid_template_names = ("plain_text",)
+    valid_template_names = [str(path.name) for path in Path(TEMPLATES_DIR).rglob(f'*')]
+
+    if "-l" or "--list" in private_argv:
+        print(valid_template_names)
+        sys.exit(0)
 
     try:
         template_path = get_credential_template_path_from_argv(private_argv=private_argv,
                                                                arg_to_search_for=credentials_template_identifier,
-                                                               valid_values=valid_template_names)
+                                                               valid_values=valid_template_names
+                                                               )
     except CredentialNameNotFound as e:
-        sys.stderr.print("Credential name not found. Did you forget your argument to --credential?")
-        raise e
+        sys.stderr.write("Credential name not found. Did you forget your argument to --credential?\n")
+        sys.exit(1)
     except CredentialArgNotSupplied as e:
-        sys.stderr.print("Credential arg is blank. --credential takes a value. See help for more.")
+        sys.stderr.write("Credential arg is blank. --credential takes a value. See help for more.")
         raise e
 
     my_template = Template(filename=template_path)
