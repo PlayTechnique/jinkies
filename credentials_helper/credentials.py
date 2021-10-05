@@ -56,11 +56,11 @@ def get_credential_template_path_from_argv(private_argv: list = None, arg_to_sea
     """
     credential_name = get_single_value_from_args(private_argv, arg_to_search_for)
 
-    if credential_name not in valid_values:
+    if not credential_name in valid_values:
         raise CredentialNameNotFound(f"""--credential specified, but no credential type given. Valid credentials are
 {"".join(valid_values)} you supplied <{credential_name}>""")
 
-    credential_path = f"credentials_templates/{credential_name}.yml.mako"
+    credential_path = f"credentials_templates/{credential_name}"
     return credential_path
 
 
@@ -75,6 +75,8 @@ def get_single_value_from_args(private_argv: list = None, arg_for_value: str = N
     >>> get_single_value_from_args(["--foo", "--bar", "bam"], "--bar")
     'bam'
 
+    >>> get_single_value_from_args(['./credentials.py', '--credential', 'plain-text.yml.mako'], "--bar")
+    'bam'
     """
     for i, arg in enumerate(private_argv):
 
@@ -92,23 +94,25 @@ def get_single_value_from_args(private_argv: list = None, arg_for_value: str = N
 
     return None
 
+# Prospective method for parsing the
+# --credentials-paper-whatever
+# def get_values_from_args(arg_for_values):
+#     for i, arg in enumerate(sys.argv):
+#         if arg == arg_for_values:
+#             value = sys.argv[i + 1]
+#
+#     yield value
 
-def get_values_from_args(arg_for_values):
-    for i, arg in enumerate(sys.argv):
-        if arg == arg_for_values:
-            value = sys.argv[i + 1]
-
-    yield value
-
-
-def get_template_properties():
-    matcher = re.compile(r'--(.*)-var')
-
-    template_properties = get_values_from_args("--")
-    return None
+# Prospective method for parsing the
+# --credentials-var stuff on the cli
+# def get_template_properties():
+#     matcher = re.compile(r'--(.*)-var')
+#
+#     template_properties = get_values_from_args("--")
+#     return None
 
 
-def helpful_help(default_templates_dir):
+def helpful_help(default_templates_dir, credential_arg, list_arg):
     this_script_name = sys.argv[0]
     return f"""{this_script_name} - generates a credentials file to standard out. Pop it where you need it \n
 and then mount it in to your jinkies. 😎
@@ -121,8 +125,8 @@ Environment Variables
 TEMPLATES_DIR="path/to/dir" (defaults to "{default_templates_dir}", the built in templates)
 
 -h --help - display this help message
---list    - list all known credentials names
---credential <credential_name>   - output the template file format for the <name> credentials. If variables are provided, 
+{list_arg}    - list all known credentials names
+{credential_arg} <credential_name>   - output the template file format for the <name> credentials. If variables are provided, 
                                    interpolate those values.
 --<credential_name>-<var_name> <value>  - set a variable to interpolate into the named template. Requires '--credential <name>' to
                                         be provided. 
@@ -133,11 +137,18 @@ def main():
     default_templates_dir = "./credentials_templates"
     TEMPLATES_DIR = os.path.abspath(os.environ.get("TEMPLATES_DIR", default_templates_dir))
 
+    # The two strings to accept on argv for arguments.
+    # We expect to see the string "--credentials" in argv followed by an argument which corresponds to
+    # everything in the name of a credentials_templates file up to the file extension.
+    credentials_arg = "--credentials"
+    # --list does not take an arg. It's a command, really.
+    list_arg = "--list"
+
     # Make a private copy of argv so that I can make edits to the contents with careless frivolity.
     private_argv = copy.deepcopy(sys.argv)
 
     if len(private_argv) <= 1:
-        print(helpful_help(default_templates_dir))
+        print(helpful_help(default_templates_dir, credentials_arg, list_arg))
         sys.exit(1)
 
     if "-h" in private_argv or "--help" in private_argv:
@@ -150,26 +161,24 @@ def main():
         sys.exit(1)
 
     os.chdir = TEMPLATES_DIR
-
-    # We expect to see the string "--credentials" in argv followed by an argument which corresponds to
-    # everything in the name of a credentials_templates file up to the file extension.
-    credentials_template_identifier = "--credentials"
     known_template_names = [str(path.name) for path in Path(TEMPLATES_DIR).rglob(f'*')]
 
-    if "-l" in private_argv or "--list" in private_argv:
+    if "--list" in private_argv:
         print(known_template_names)
         sys.exit(0)
 
     try:
         template_path = get_credential_template_path_from_argv(private_argv=private_argv,
-                                                               arg_to_search_for=credentials_template_identifier,
+                                                               arg_to_search_for=credentials_arg,
                                                                valid_values=known_template_names
                                                                )
     except CredentialNameNotFound as e:
-        sys.stderr.write("Credential name not found. Did you forget your argument to --credential?\n")
-        sys.exit(1)
+        sys.stderr.write(f"Credential name not found. Did you forget your argument to {credentials_arg}?\n")
+        sys.stderr.write("Stack trace to follow:\n\n")
+        raise e
     except CredentialArgNotSupplied as e:
-        sys.stderr.write("Credential arg is blank. --credential takes a value. See help for more.")
+        sys.stderr.write(f"Credential arg is blank. {credentials_arg} takes a value. See help for more.\n")
+        sys.stderr.write("Stack trace to follow:\n\n")
         raise e
 
     my_template = Template(filename=template_path)
