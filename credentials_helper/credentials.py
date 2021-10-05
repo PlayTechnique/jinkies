@@ -154,16 +154,16 @@ def main():
     # We expect to see the string "--credentials" in argv followed by an argument which corresponds to
     # everything in the name of a credentials_templates file up to the file extension.
     credentials_template_identifier = "--credentials"
-    valid_template_names = [str(path.name) for path in Path(TEMPLATES_DIR).rglob(f'*')]
+    known_template_names = [str(path.name) for path in Path(TEMPLATES_DIR).rglob(f'*')]
 
-    if "-l" or "--list" in private_argv:
-        print(valid_template_names)
+    if "-l" in private_argv or "--list" in private_argv:
+        print(known_template_names)
         sys.exit(0)
 
     try:
         template_path = get_credential_template_path_from_argv(private_argv=private_argv,
                                                                arg_to_search_for=credentials_template_identifier,
-                                                               valid_values=valid_template_names
+                                                               valid_values=known_template_names
                                                                )
     except CredentialNameNotFound as e:
         sys.stderr.write("Credential name not found. Did you forget your argument to --credential?\n")
