@@ -8,6 +8,7 @@ source Docker/build.env
 show_help="false"
 start="false"
 stop="false"
+logs="false"
 
 if [[ ${#@} -lt 1 ]]; then
   show_help="true"
@@ -16,6 +17,7 @@ fi
 for arg in $@
 do
   case $arg in
+    "--logs"      )  logs="true"; shift;;
     "--start"     )  start="true"; shift;;
     "--stop"     )  stop="true"; shift;;
     "-h" | "--help"    )  show_help="true"; shift;;
@@ -25,6 +27,8 @@ done
 if [[ "${show_help}" == "true" ]]; then
   echo "Usage: ${0} --start   Starts the container. Takes place before a --stop."
   echo "       ${0} --stop   Stops and deletes the container"
+  echo "       ${0} --logs   run 'docker logs' for the container"
+
   exit 0
 fi
 
@@ -36,4 +40,8 @@ fi
 
 if [[ ${stop} == "true" ]]; then
   docker container stop ${CONTAINER_SHORT_NAME}
+fi
+
+if [[ ${logs} == "true" ]]; then
+  docker logs -f ${CONTAINER_SHORT_NAME}
 fi

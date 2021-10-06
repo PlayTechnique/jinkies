@@ -5,18 +5,21 @@ cd ${THIS_SCRIPT_DIR}
 
 THIS_SCRIPT_NAME=$(basename $0)
 ENV_FILE="${THIS_SCRIPT_DIR}/build.env"
+NO_CACHE=""
 
 function usage() {
   cat <<EOS
   Usage: ${THIS_SCRIPT_NAME} - builds the container
   Arguments:
-    -v -- Version number to tag the build with. Defaults to latest.
+    -v            -- Version number to tag the build with. Defaults to latest.
+    --no-cache    -- Pass the --no-cache flag through to docker build
 EOS
 }
 
 for arg in $@
 do
   case $arg in
+    "--no-cache"       )  NO_CACHE="--no-cache"; shift;;
     "--env-file"       )  shift; ENV_FILE=$arg; shift;;
     "-h" | "--help"    )  show_help="true"; shift;;
   esac
@@ -34,7 +37,7 @@ else
   exit 1
 fi
 
-docker build -t "${IMAGE_TAG}:${IMAGE_VERSION}" . --build-arg casc_jenkins_config="${CASC_JENKINS_CONFIG}" \
+docker build ${NO_CACHE} -t "${IMAGE_TAG}:${IMAGE_VERSION}" . --build-arg casc_jenkins_config="${CASC_JENKINS_CONFIG}" \
                                                   --build-arg jenkins_home="${JENKINS_HOME}" \
                                                   --build-arg jenkins_java_opts="${JENKINS_JAVA_OPTS}"
 
