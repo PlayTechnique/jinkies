@@ -9,8 +9,8 @@ which has already stood the test of time.
 I have ideas for simple, small, hobbyist tools, and this is one of those ideas.
 
 # How do I get started using this project?
-If the image is hosted on docker hub, probably pull that. For now, though, it's all in dev mode, so 
-check out the Docker directory and use the build_image script to build the container and the jinkies script to run the container.
+It's all in dev mode, so  check out the Docker directory and use the build_image script to build the container and the jinkies script to run the container.
+
 
 
                                                                                                     
