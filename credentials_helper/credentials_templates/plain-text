@@ -5,7 +5,7 @@ credentials:
     domainCredentials:
     - credentials:
       - string:
-          description: "secret-description"
-          id: "secret-ID"
+          description: "${description}"
+          id: "${secret-id}"
           scope: GLOBAL
-          secret: "secret goes here"
+          secret: "${github-api-token}"
