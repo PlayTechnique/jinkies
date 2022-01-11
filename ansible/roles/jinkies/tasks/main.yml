@@ -1,0 +1,6 @@
+
+- name: install it all
+  include_tasks:  upgrade_debian_install_docker.yml
+
+- name: Start the docker container
+  include_tasks: start_container.yml
