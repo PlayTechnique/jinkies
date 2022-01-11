@@ -3,10 +3,13 @@ FROM jenkins/jenkins:lts-jdk11
 ARG casc_jenkins_config
 ARG jenkins_home
 ARG jenkins_java_opts
+ARG secrets_dir
 
 ENV CASC_JENKINS_CONFIG=${casc_jenkins_config}
 ENV JENKINS_HOME=${jenkins_home}
 ENV JAVA_OPTS=${jenkins_java_opts}
+
+ENV SECRETS_DIR=${secrets_dir}
 
 # https://github.com/jenkinsci/configuration-as-code-plugin/blob/master/docs/features/secrets.adoc#docker-secrets
 USER root
@@ -19,11 +22,13 @@ USER jenkins
 # Why each plugin is needed:
 #
 # plain-credentials is recommended in the github pull request builder's configuration page as the preferred method
-# of providing your credentials to Jenkins.
-# ghprb is to manage communication with github
+# of providing your credentials to Jenkins. - https://plugins.jenkins.io/plain-credentials/
+#                                           - plugins versions https://get.jenkins.io/plugins/plain-credentials/
+# github-branch-source to build out the  - https://docs.cloudbees.com/docs/cloudbees-ci/latest/cloud-admin-guide/github-branch-source-plugin
+#                                        - plugins versions https://get.jenkins.io/plugins/github-branch-source/
 # configuration-as-code is to allow jenkins elements to be configured with the yaml file format provided by the "Jenkins
-# Configuration As Code" plugin
-RUN jenkins-plugin-cli --plugins plain-credentials:1.7 ghprb:1.42.2 configuration-as-code:1.52
+# Configuration As Code" plugin -https://github.com/jenkinsci/configuration-as-code-plugin
+#                               - plugins versions https://get.jenkins.io/plugins/configuration-as-code/
+RUN jenkins-plugin-cli --plugins plain-credentials:1.7 github-branch-source:2.11.4 configuration-as-code:1.55
 
-ADD secrets/ /run/secrets/
-ADD jcasc/ ${CASC_JENKINS_CONFIG}/
+ADD ${SECRETS_DIR}/ /run/secrets/

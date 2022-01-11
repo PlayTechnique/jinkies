@@ -1,3 +1,6 @@
 **/jenkins.war
 **/.idea/**
-
+**/secrets/**
+/ansible/hosts.ini
+/terraform/
+/ansible/ansible.cfg

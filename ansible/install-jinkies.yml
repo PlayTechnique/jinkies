@@ -1,0 +1,6 @@
+---
+- hosts: jinkies
+  become: true
+
+  roles:
+    - jinkies
