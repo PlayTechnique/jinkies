@@ -22,13 +22,20 @@ USER jenkins
 # Why each plugin is needed:
 #
 # plain-credentials is recommended in the github pull request builder's configuration page as the preferred method
-# of providing your credentials to Jenkins. - https://plugins.jenkins.io/plain-credentials/
-#                                           - plugins versions https://get.jenkins.io/plugins/plain-credentials/
-# github-branch-source to build out the  - https://docs.cloudbees.com/docs/cloudbees-ci/latest/cloud-admin-guide/github-branch-source-plugin
-#                                        - plugins versions https://get.jenkins.io/plugins/github-branch-source/
+# of providing your credentials to Jenkins.
+# - https://plugins.jenkins.io/plain-credentials/
+# - plugins versions https://get.jenkins.io/plugins/plain-credentials/
+# github-branch-source to build out the github support
+# - https://docs.cloudbees.com/docs/cloudbees-ci/latest/cloud-admin-guide/github-branch-source-plugin
+# - plugins versions https://get.jenkins.io/plugins/github-branch-source/
 # configuration-as-code is to allow jenkins elements to be configured with the yaml file format provided by the "Jenkins
-# Configuration As Code" plugin -https://github.com/jenkinsci/configuration-as-code-plugin
-#                               - plugins versions https://get.jenkins.io/plugins/configuration-as-code/
-RUN jenkins-plugin-cli --plugins plain-credentials:1.7 github-branch-source:2.11.4 configuration-as-code:1.55
+# Configuration As Code" plugin
+# - https://github.com/jenkinsci/configuration-as-code-plugin
+# - plugins versions https://get.jenkins.io/plugins/configuration-as-code/
+# workflow-aggregator is used to support the Jenkins Pipeline build file format
+# - https://plugins.jenkins.io/workflow-aggregator/
+# - plugins versions https://get.jenkins.io/plugins/workflow-aggregator/
+RUN jenkins-plugin-cli --plugins plain-credentials github-branch-source configuration-as-code workflow-aggregator
 
 ADD ${SECRETS_DIR}/ /run/secrets/
+ADD ./init.groovy.d/ ${JENKINS_HOME}/init.groovy.d

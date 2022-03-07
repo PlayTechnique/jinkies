@@ -39,6 +39,6 @@ fi
 
 docker build ${NO_CACHE} -t "${IMAGE_TAG}:${IMAGE_VERSION}" . --build-arg casc_jenkins_config="${CASC_JENKINS_CONFIG}" \
                                                   --build-arg jenkins_home="${JENKINS_HOME}" \
-                                                  --build-arg jenkins_java_opts="${JENKINS_JAVA_OPTS}"
+                                                  --build-arg jenkins_java_opts="${JENKINS_JAVA_OPTS}" \
                                                   --build-arg secrets_dir="${SECRETS_DIR}"
 
