@@ -1,0 +1,50 @@
+version '1.0-SNAPSHOT'
+
+apply plugin: 'groovy'
+apply plugin: 'java'
+apply plugin: 'idea'
+
+idea {
+    module {
+        downloadJavadoc = true
+        downloadSources = true
+    }
+}
+
+configurations {
+    toCopy
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+sourceSets {
+    main {
+        groovy {
+            srcDirs = ['Docker/init.groovy.d']
+        }
+    }
+}
+
+repositories {
+    maven {url 'https://repo.jenkins-ci.org/artifactory/public/'}
+    maven {url 'https://repo.jenkins-ci.org/releases/'}
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.codehaus.groovy:groovy-all:3.0.10'
+    implementation 'org.jenkins-ci.main:jenkins-core:2.319'
+
+    implementation fileTree(dir: 'Docker/init.groovy.d', include: ['*.groovy'])
+
+
+    // Jenkins plugins
+    implementation group: 'org.jenkins-ci.plugins', name: 'credentials', version: '1074.v60e6c29b_b_44b_', ext: 'jar'
+    implementation group: 'org.jenkins-ci.plugins', name: 'credentials-binding', version: '1.27.1', ext: 'jar'
+    implementation group: 'org.jenkins-ci.plugins.workflow', name: 'workflow-aggregator', version: '2.6'
+    implementation group: 'org.jenkins-ci.plugins.workflow', name: 'workflow-api', version: '2.6', ext: 'jar'
+
+    // Not currently using this, but it seems wicked useful
+//    testImplementation group: 'com.lesfurets', name: 'jenkins-pipeline-unit', version: '1.1'
+}
