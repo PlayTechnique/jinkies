@@ -11,6 +11,19 @@ I have ideas for simple, small, hobbyist tools, and this is one of those ideas.
 # How do I get started using this project?
 It's all in dev mode, so  check out the Docker directory and use the build_image script to build the container and the jinkies script to run the container.
 
+# Design
+Jinkies is designed to be a flexible, extensible Jenkins base. We want to offer flexible configuration of every piece of Jenkins that we interact with, to
+allow end users maximum extensibility as well as being a firm foundation for people to learn about Jenkins from.
+
+## How to customise configuration files
+Where possible, configuration files are read from files pointed to by environment variables. This allows this project to ship a sane default jinkies system,
+while also allowing consumers of the project to provider their own version of the file by mounting in the file and overriding the contents of the environment.
+
+These environment variables will be called JINKIES_$FEATURE.
+
+## Seed Job Implementation
+The seed job implementation can be provided as a Jenkinsfile. Provide The seed job hook script evaluates an environment variable
+
 
 
                                                                                                     
