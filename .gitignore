@@ -4,3 +4,4 @@
 /ansible/hosts.ini
 /terraform/
 /ansible/ansible.cfg
+tmp/*
