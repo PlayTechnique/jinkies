@@ -13,10 +13,11 @@ jenkins = Jenkins.instance;
 scm = new GitSCM("https://github.com/gwynforthewyn/jinkies");
 scm.branches = [new BranchSpec("*/main")];
 
-workflowJob = new WorkflowJob(jenkins, "your-default-seed-job");
 
+seedJobDescription = System.getenv('JINKIES_SEED_DESCRIPTION')
 jenkinsFileLocation = System.getenv('JINKIES_SEED_JENKINSFILE')
 
+workflowJob = new WorkflowJob(jenkins, seedJobDescription);
 jobDefinition = new File(jenkinsFileLocation).getText('UTF-8')
 
 workflowJob.definition = new CpsFlowDefinition(jobDefinition, true);
