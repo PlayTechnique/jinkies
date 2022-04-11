@@ -19,7 +19,8 @@ allow end users maximum extensibility as well as being a firm foundation for peo
 Where possible, configuration files are read from files pointed to by environment variables. This allows this project to ship a sane default jinkies system,
 while also allowing consumers of the project to provider their own version of the file by mounting in the file and overriding the contents of the environment.
 
-These environment variables will be called JINKIES_$FEATURE.
+These environment variables will be called JINKIES_$FEATURE and are documented in Docker/build.env
+
 
 ## Seed Job Implementation
 The seed job implementation can be provided as a Jenkinsfile. Provide The seed job hook script evaluates an environment variable
@@ -82,4 +83,3 @@ The seed job implementation can be provided as a Jenkinsfile. Provide The seed j
                            ::-::                    `:oyddmdh/                                      
                            --.``                   :shyhdh:-`                                       
                           `-....`` `              -yhhyo/`
-
