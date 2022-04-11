@@ -1,5 +1,11 @@
-pipeline('example') {
-    steps {
-        shell('echo Hello World!')
+pipeline {
+    agent any
+
+    stages {
+        stage("show the example") {
+            steps {
+                shell('echo Hello World!')
+            }
+        }
     }
 }

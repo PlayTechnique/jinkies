@@ -4,12 +4,14 @@ ARG casc_jenkins_config
 ARG jenkins_home
 ARG jenkins_java_opts
 ARG secrets_dir
-ARG seed_jenkinsfile
+ARG jinkies_seed_description
+ARG jinkies_seed_jenkinsfile
 
 ENV CASC_JENKINS_CONFIG=${casc_jenkins_config}
 ENV JENKINS_HOME=${jenkins_home}
 ENV JAVA_OPTS=${jenkins_java_opts}
-ENV JINKIES_SEED_JENKINSFILE=${seed_jenkinsfile}
+ENV JINKIES_SEED_DESCRIPTION=${jinkies_seed_description}
+ENV JINKIES_SEED_JENKINSFILE=${jinkies_seed_jenkinsfile}
 
 ENV SECRETS_DIR=${secrets_dir}
 

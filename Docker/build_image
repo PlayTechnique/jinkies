@@ -41,5 +41,5 @@ docker build ${NO_CACHE} -t "${IMAGE_TAG}:${IMAGE_VERSION}" . --build-arg casc_j
                                                   --build-arg jenkins_home="${JENKINS_HOME}" \
                                                   --build-arg jenkins_java_opts="${JENKINS_JAVA_OPTS}" \
                                                   --build-arg secrets_dir="${SECRETS_DIR}" \
-                                                  --build-arg seed_jenkinsfile="${JINKIES_SEED_JENKINSFILE}"
-
+                                                  --build-arg jinkies_seed_description="${JINKIES_SEED_DESCRIPTION}" \
+                                                  --build-arg jinkies_seed_jenkinsfile="${JINKIES_SEED_JENKINSFILE}"
